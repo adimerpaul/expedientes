@@ -38,13 +38,12 @@ if ($method == "POST" && $request == '/'){
             mkdir($uploadDirectory, 0777, true);
         }
         if (move_uploaded_file($tmp_documento, $uploadDirectory . $nombredocumento)) {
-            move_uploaded_file($tmp_documento, $uploadDirectory . $nombredocumento);
 //            echo "Archivo subido correctamente";
         } else {
 //            echo "Error al mover el archivo";
         }
     } else {
-        echo "No se ha subido ningún archivo";
+//        echo "No se ha subido ningún archivo";
     }
 
     $sql = "INSERT INTO archivos(id,idcategoria,idinstitucion, motivo,nombre,numero,fecha,documento,tipo,tamano,descripcion)
@@ -63,6 +62,51 @@ VALUES(null,:idcategoria,:idinstitucion,:motivo,:nombre,:numero,:fecha,:document
     $query->execute();
     echo json_encode(array("status" => 200, "message" => "Archivo creado correctamente"));
 }
+if ($method == "POST" && $request == '/editar') {
+    $data = $_POST;
+    $file = $_FILES['documento'];
+    if (isset($_FILES['documento'])) {
+        $file = $_FILES['documento'];
+        $nombredocumento = $file['name'];
+        $tmp_documento = $file['tmp_name'];
+        $uploadDirectory = "../public/documentos/";
+        if (move_uploaded_file($tmp_documento, $uploadDirectory . $nombredocumento)) {
+
+        } else {
+
+        }
+    }else{
+        $sql = "SELECT documento FROM archivos WHERE id=:id";
+        $query = $conexion->prepare($sql);
+        $query->bindParam(":id", $data['id']);
+        $query->execute();
+        $documento = $query->fetch(PDO::FETCH_ASSOC);
+        $nombredocumento = $documento['documento'];
+    }
+    $sql = "UPDATE archivos SET idcategoria=:idcategoria, idinstitucion=:idinstitucion, motivo=:motivo, nombre=:nombre, numero=:numero, fecha=:fecha, documento=:documento, tipo=:tipo, tamano=:tamano, descripcion=:descripcion WHERE id=:id";
+    $query = $conexion->prepare($sql);
+    $query->bindParam(":id", $data['id']);
+    $query->bindParam(":idcategoria", $data['idcategoria']);
+    $query->bindParam(":idinstitucion", $data['idinstitucion']);
+    $query->bindParam(":motivo", $data['motivo']);
+    $query->bindParam(":nombre", $data['nombre']);
+    $query->bindParam(":numero", $data['numero']);
+    $query->bindParam(":fecha", $data['fecha']);
+    $query->bindParam(":documento", $nombredocumento);
+    $query->bindParam(":tipo", $data['tipo']);
+    $query->bindParam(":tamano", $data['tamano']);
+    $query->bindParam(":descripcion", $data['descripcion']);
+    $query->execute();
+    echo json_encode(array("status" => 200, "message" => "Archivo actualizado correctamente"));
+}
+if ($method == "POST" && $request == '/eliminar') {
+    $data = $_POST;
+    $sql = "DELETE FROM archivos WHERE id=:id";
+    $query = $conexion->prepare($sql);
+    $query->bindParam(":id", $data['id']);
+    $query->execute();
+    echo json_encode(array("status" => 200, "message" => "Archivo eliminado correctamente"));
+}
 if ($request == '/categoriasInstituciones') {
     $sql = "SELECT * FROM categorias";
     $query = $conexion->prepare($sql);
@@ -77,4 +121,12 @@ if ($request == '/categoriasInstituciones') {
     $data = array("categorias" => $categorias, "instituciones" => $instituciones);
     echo json_encode($data);
 }
+if ($request == '/usuarios') {
+    $sql = "SELECT * FROM usuarios where rol = 0";
+    $query = $conexion->prepare($sql);
+    $query->execute();
+    $usuarios = $query->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode($usuarios);
+}
+
 ?>

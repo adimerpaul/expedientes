@@ -1,0 +1,18 @@
+reporte acumulativo del viaje
+cerrar el viaje
+
+usuario que no vea venta  solo puede vendar y meter
+(Vendedor agregra gastos) tripulación viajte y anulación
+
+generar texto por que se esta anulado 
+
+
+-licencia matricula documentos de bote
+licencia fecha de inifio a fin
+-matricula fecha inicio y fin
+-agregar documento 
+-vijencia de los galoes
+-medio mambiente
+
+que obliqgue a cambiar la fecha de finalisado
+
