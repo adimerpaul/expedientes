@@ -137,5 +137,34 @@ if ($request == '/asignar') {
     $query->execute();
     echo json_encode(array("status" => 200, "message" => "Archivo asignado correctamente"));
 }
+if ($request == '/updateArchivoAsignado') {
+    $data = $_POST;
+
+    $file = $_FILES['documento'];
+    if (isset($_FILES['documento'])) {
+        $file = $_FILES['documento'];
+        $nombredocumento = $file['name'];
+        $tmp_documento = $file['tmp_name'];
+
+        $uploadDirectory = "../public/documentos/";
+        if (!is_dir($uploadDirectory)) {
+            mkdir($uploadDirectory, 0777, true);
+        }
+        if (move_uploaded_file($tmp_documento, $uploadDirectory . $nombredocumento)) {
+//            echo "Archivo subido correctamente";
+        } else {
+//            echo "Error al mover el archivo";
+        }
+    } else {
+//        echo "No se ha subido ningún archivo";
+    }
+
+    $sql = "UPDATE archivos SET archivo_asignado=:documento WHERE id=:id";
+    $query = $conexion->prepare($sql);
+    $query->bindParam(":id", $data['id']);
+    $query->bindParam(":documento", $nombredocumento);
+    $query->execute();
+    echo json_encode(array("status" => 200, "message" => "Archivo actualizado correctamente"));
+}
 
 ?>

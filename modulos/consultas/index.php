@@ -2,7 +2,12 @@
 include '../../templates/template.php';
 include '../../conexion.php';
 
-$sentencia = $conexion->prepare('SELECT archivos.*, categorias.nombre as categoria FROM archivos INNER JOIN categorias on archivos.idcategoria=categorias.id order by id desc');
+$user_id = $_SESSION['login'];
+$sentencia = $conexion->prepare('SELECT archivos.*, categorias.nombre as categoria FROM archivos
+INNER JOIN categorias on archivos.idcategoria=categorias.id
+WHERE archivos.user_asignado_id = :user_id
+order by id desc');
+$sentencia->bindParam(':user_id', $user_id);
 $sentencia->execute();
 $archivos = $sentencia->fetchAll(PDO::FETCH_ASSOC);
 
