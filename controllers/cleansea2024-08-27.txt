@@ -1,0 +1,23 @@
+servicio (por servicio) tipo D
+servicio contenido de derrames para voucher B
+N de orden de compra no colocado al principio
+
+bandera api mas igen
+
+texto de requiere verificación en dropdown
+confirmado (nombre cargo dni fecha hora)
+
+
+
+---------------------------
+colocar zona en voucher a y b
+
+mensaje de desearchivar el voucher
+dessarchiva el voucher el voucher
+
+
+voucher Excel y pdf de cada voucher
+
+ver archivos del proyecto
+estado voucher confirmado
+------------------------------

@@ -25,6 +25,44 @@ if($method == "GET" && $request == '/'){
         echo json_encode($data);
     }
 }
+if ($method == "POST" && $request == '/'){
+    $data = $_POST;
+    $file = $_FILES['documento'];
+    if (isset($_FILES['documento'])) {
+        $file = $_FILES['documento'];
+        $nombredocumento = $file['name'];
+        $tmp_documento = $file['tmp_name'];
+
+        $uploadDirectory = "../public/documentos/";
+        if (!is_dir($uploadDirectory)) {
+            mkdir($uploadDirectory, 0777, true);
+        }
+        if (move_uploaded_file($tmp_documento, $uploadDirectory . $nombredocumento)) {
+            move_uploaded_file($tmp_documento, $uploadDirectory . $nombredocumento);
+//            echo "Archivo subido correctamente";
+        } else {
+//            echo "Error al mover el archivo";
+        }
+    } else {
+        echo "No se ha subido ningún archivo";
+    }
+
+    $sql = "INSERT INTO archivos(id,idcategoria,idinstitucion, motivo,nombre,numero,fecha,documento,tipo,tamano,descripcion)
+VALUES(null,:idcategoria,:idinstitucion,:motivo,:nombre,:numero,:fecha,:documento,:tipo,:tamano,:descripcion)";
+    $query = $conexion->prepare($sql);
+    $query->bindParam(":idcategoria", $data['idcategoria']);
+    $query->bindParam(":idinstitucion", $data['idinstitucion']);
+    $query->bindParam(":motivo", $data['motivo']);
+    $query->bindParam(":nombre", $data['nombre']);
+    $query->bindParam(":numero", $data['numero']);
+    $query->bindParam(":fecha", $data['fecha']);
+    $query->bindParam(":documento", $nombredocumento);
+    $query->bindParam(":tipo", $data['tipo']);
+    $query->bindParam(":tamano", $data['tamano']);
+    $query->bindParam(":descripcion", $data['descripcion']);
+    $query->execute();
+    echo json_encode(array("status" => 200, "message" => "Archivo creado correctamente"));
+}
 if ($request == '/categoriasInstituciones') {
     $sql = "SELECT * FROM categorias";
     $query = $conexion->prepare($sql);
