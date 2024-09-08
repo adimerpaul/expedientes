@@ -52,7 +52,7 @@ include('../../templates/template.php');
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h5 class="modal-title" id="exampleModalLabel">AGREGAR ARCHIVO</h5>
+                <h5 class="modal-title" id="exampleModalLabel">ARCHIVOS</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -133,6 +133,29 @@ include('../../templates/template.php');
         </div>
     </div>
 </div>
+<!--  Modal   asignar-->
+<div class="modal fade" id="asignar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title" id="exampleModalLabel">ASIGNAR ARCHIVO A USUARIO</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formAsignar">
+            <div class="modal-body">
+                <div class="row" id="asignarUser">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
 <script>
 window.onload = function () {
     // toastr.info('Are you the 6 fingered man?')
@@ -150,8 +173,20 @@ window.onload = function () {
             url: '../../controllers/ArchivoControllers.php/usuarios',
             type: 'GET',
             success: function (response) {
-                console.log(response);
+                // console.log(response);
                 usuarios = JSON.parse(response);
+                let template = '';
+                usuarios.forEach(u => {
+                    template += `
+                    <div class="col-md-8">
+                        <label for="${u.id}" class="form-label">${u.nombres}</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="radio" name="idusuario" id="${u.id}" value="${u.id}">
+                    </div>
+                    `;
+                });
+                $('#asignarUser').html(template);
             }
         });
     }
@@ -173,6 +208,27 @@ window.onload = function () {
     $('#btnCreate').click(function () {
         $('#create').modal('show');
         archivo = {};
+    });
+
+    $('#formAsignar').submit(function (e) {
+        e.preventDefault();
+        let idusuario = $('input[name="idusuario"]:checked').val();
+        console.log(idusuario);
+        if (!idusuario) {
+            alert('El usuario es requerido');
+            return;
+        }
+        $.ajax({
+            url: '../../controllers/ArchivoControllers.php/asignar',
+            type: 'POST',
+            data: { idarchivo: archivo.id, idusuario },
+            success: function(response) {
+                // console.log(response);
+                $('#asignar').modal('hide');
+                toastr.success('Archivo asignado correctamente');
+                archivosGet();
+            }
+        });
     });
 
     $('#formSubmit').submit(function (e) {
@@ -304,6 +360,20 @@ window.onload = function () {
             });
         }
     });
+    $(document).on('click', '.asignar-btn', function() {
+        const id = $(this).data('id');
+        // console.log(id);
+        $('#asignar').modal('show');
+        archivo = archivos.find(a => a.id == id);
+        if (archivo.user_asignado_id) {
+            console.log(archivo.user_asignado_id);
+            $('input[name="idusuario"]').each(function() {
+                if ($(this).val() == archivo.user_asignado_id) {
+                    $(this).prop('checked', true);
+                }
+            });
+        }
+    });
 
     function archivosGet() {
         $('#tbody').html('');
@@ -316,7 +386,17 @@ window.onload = function () {
                 // console.log(response);
                 let data = JSON.parse(response);
                 let template = '';
+
                 data.forEach(d => {
+                    if(d.archivo_asignado == null && d.user_asignado_id == null){
+                        statusChip = `<span class="badge bg-danger"> No asignado</span>`;
+                    }else if(d.archivo_asignado == null && d.user_asignado_id !== null){
+                        statusChip = `<span class="badge bg-warning">Pendiente</span>`;
+                    }else{
+                        statusChip = `<a href="../../public/documentos/${d.archivo_asignado}" target="_blank">
+                            <i class="fas fa-eye text-success"></i>
+                        </a>`;
+                    }
                     archivos.push(d);
                     template += `
                     <tr>
@@ -332,16 +412,14 @@ window.onload = function () {
                             </a>
                         </td>
                         <td>
-                            <a href="../../public/documentos/${d.documento}" target="_blank">
-                                <i class="fas fa-eye text-success"></i>
-                            </a>
+                            ${statusChip}
                         </td>
                         <td class="text-center">
                         <div class="btn-group mr-2" role="group" aria-label="First group">
                             <button type="button" class="btn btn-info btn-sm edit-btn" data-id="${d.id}">
                                 <i class="fas fa-edit"></i> Editar
                             </button>
-                            <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#asig${d.id}">
+                            <button type="button" class="btn btn-warning btn-sm asignar-btn" data-id="${d.id}">
                                 <i class="fas fa-stethoscope"></i> Asignar
                             </button>
                             <button type="button" class="btn btn-danger btn-sm delete-btn" data-id="${d.id}">

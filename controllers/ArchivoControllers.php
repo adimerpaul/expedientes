@@ -128,5 +128,14 @@ if ($request == '/usuarios') {
     $usuarios = $query->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode($usuarios);
 }
+if ($request == '/asignar') {
+    $data = $_POST;
+    $sql = "UPDATE archivos SET user_asignado_id=:idusuario WHERE id=:id";
+    $query = $conexion->prepare($sql);
+    $query->bindParam(":id", $data['idarchivo']);
+    $query->bindParam(":idusuario", $data['idusuario']);
+    $query->execute();
+    echo json_encode(array("status" => 200, "message" => "Archivo asignado correctamente"));
+}
 
 ?>
