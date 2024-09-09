@@ -396,6 +396,15 @@ window.onload = function () {
                         statusChip = `<a href="../../public/documentos/${d.archivo_asignado}" target="_blank">
                             <i class="fas fa-eye text-success"></i>
                         </a>`;
+                    }}
+
+                    // el boton eliminar solo vizualizar si el archivo esta en archivo_asignado null
+                    if (d.archivo_asignado !== null) {
+                        btnElminar = ''
+                    } else {
+                        btnElminar = `<button type="button" class="btn btn-danger btn-sm delete-btn" data-id="${d.id}">
+                            <i class="fas fa-trash-alt"></i> Eliminar
+                        </button>`;
                     }
                     archivos.push(d);
                     template += `
@@ -422,9 +431,7 @@ window.onload = function () {
                             <button type="button" class="btn btn-warning btn-sm asignar-btn" data-id="${d.id}">
                                 <i class="fas fa-stethoscope"></i> Asignar
                             </button>
-                            <button type="button" class="btn btn-danger btn-sm delete-btn" data-id="${d.id}">
-                                <i class="fas fa-trash-alt"></i> Eliminar
-                            </button>
+                            ${btnElminar}
                         </div>
                         </td>
                     </tr>
