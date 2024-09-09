@@ -399,12 +399,12 @@ window.onload = function () {
                     }}
 
                     // el boton eliminar solo vizualizar si el archivo esta en archivo_asignado null
-                    if (d.archivo_asignado != null) {
-                        btnElminar = ''
-                    } else {
+                    if (d.archivo_asignado == null) {
                         btnElminar = `<button type="button" class="btn btn-danger btn-sm delete-btn" data-id="${d.id}">
                             <i class="fas fa-trash-alt"></i> Eliminar
-                        </button>`;
+                    </button>`
+                    } else {
+                        btnElminar = ``;
                     }
                     archivos.push(d);
                     template += `
