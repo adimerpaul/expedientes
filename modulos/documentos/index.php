@@ -396,7 +396,7 @@ window.onload = function () {
                         statusChip = `<a href="../../public/documentos/${d.archivo_asignado}" target="_blank">
                             <i class="fas fa-eye text-success"></i>
                         </a>`;
-                    }}
+                    }
 
                     // el boton eliminar solo vizualizar si el archivo esta en archivo_asignado null
                     if (d.archivo_asignado == null) {
